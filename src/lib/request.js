@@ -7,17 +7,36 @@ import debug      from 'debug';
 
 const logger = debug('providersdk:request');
 
+/** Class representing request. */
 export class Request {
+
+  /**
+   * Create a request
+   * @param  {object} options           Options
+   * @param  {object} options.method    Request method
+   * @param  {object} options.url       Request url relative to the base url
+   * @param  {object} options.accessId  Provider access id
+   * @param  {object} options.secretKey Provider secret key
+   * @param  {object} options.body      Request body
+   */
   constructor(options) {
     this.options = options;
     logger('request created', options);
   }
 
+  /**
+   * Send the request and retry if communication error is encountered
+   * @return {Promise}
+   */
   send () {
-    return this._send();
+    return this.sendRequest();
   }
 
-  _send() {
+  /**
+   * Send the request
+   * @return {Promise}
+   */
+  sendRequest() {
     let self = this;
     return new Promise(function(resolve, reject) {
       let date = new Date().toUTCString(),
