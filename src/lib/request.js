@@ -1,7 +1,7 @@
 'use strict';
 
 import request from 'request';
-import config from '../config';
+import config from '../../config';
 
 export class Request {
   constructor(options) {
@@ -9,12 +9,19 @@ export class Request {
   }
 
   send () {
+    return this._send();
+  }
+
+  _send() {
     let self = this;
     return new Promise(function(resolve, reject) {
       let opts = {
         baseUrl: config.url,
         url: self.options.url,
         method: self.options.method,
+        headers: {
+          Date: new Date().toUTCString()
+        },
         json: true
       };
       request(opts, function(err, response) {
