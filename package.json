@@ -2,5 +2,13 @@
   "name": "ProviderSDK",
   "version": "0.0.1",
   "description": "SDK for OneWallet providers",
-  "main": "index.js"
+  "main": "index.js",
+  "jshintConfig": {
+    "node": true,
+    "undef": true,
+    "unused": true,
+    "esnext": true,
+    "sub": true,
+    "validthis": true
+  }
 }
