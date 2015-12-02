@@ -4,6 +4,7 @@ import request    from 'request';
 import config     from '../../config';
 import {hmacsign} from './utilities';
 import debug      from 'debug';
+import Promise    from 'bluebird';
 
 const logger = debug('providersdk:request');
 
