@@ -16,11 +16,13 @@ export class Request {
   _send() {
     let self = this;
     return new Promise(function(resolve, reject) {
-      let date = new Date().toUTCString();
+      let date = new Date().toUTCString(),
+        method = self.options.method.toUpperCase(),
+        body = (method === 'GET') ? null : JSON.stringify(self.options.body);
       let signature = hmacsign({
-        method: self.options.method.toUpperCase(),
+        method,
         url: self.options.url,
-        body: (self.options.method.toUpperCase() === 'GET') ? null : self.options.body,
+        body: body,
         date,
         secretKey: self.options.secretKey
       });
@@ -32,8 +34,14 @@ export class Request {
           Date: date,
           Authorization: `OW ${self.options.accessId}:${signature}`
         },
-        json: true
+        json: false
       };
+
+      if(method !== 'GET' && !body) {
+        opts.body = body;
+        opts.headers['Content-type'] = 'application/json';
+      }
+
       request(opts, function(err, response) {
         if(err) return reject(err);
         resolve(response.body);
