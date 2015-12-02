@@ -48,4 +48,37 @@ export class OneWallet {
 
     return new Request(opts).send();
   }
+
+  credit(userId, gameId, delta) {
+    let transactionId = uuid.v1();
+    let opts = {
+      method: 'PUT',
+      url: `/v1/users/${userId}/games/${gameId}/transactions/${transactionId}`,
+      accessId: this.accessId,
+      secretKey: this.secretKey,
+      body: {
+        type: 'credit',
+        params: {
+          delta
+        }
+      }
+    };
+
+    return new Request(opts).send();
+  }
+
+  rollback(userId, gameId) {
+    let transactionId = uuid.v1();
+    let opts = {
+      method: 'PUT',
+      url: `/v1/users/${userId}/games/${gameId}/transactions/${transactionId}`,
+      accessId: this.accessId,
+      secretKey: this.secretKey,
+      body: {
+        type: 'rollback'
+      }
+    };
+
+    return new Request(opts).send();
+  }
 }

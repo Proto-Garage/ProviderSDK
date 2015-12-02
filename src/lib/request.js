@@ -3,10 +3,14 @@
 import request    from 'request';
 import config     from '../../config';
 import {hmacsign} from './utilities';
+import debug      from 'debug';
+
+const logger = debug('providersdk:request');
 
 export class Request {
   constructor(options) {
     this.options = options;
+    logger('request created', options);
   }
 
   send () {
@@ -19,6 +23,7 @@ export class Request {
       let date = new Date().toUTCString(),
         method = self.options.method.toUpperCase(),
         body = (method === 'GET') ? null : JSON.stringify(self.options.body);
+
       let signature = hmacsign({
         method,
         url: self.options.url,
@@ -29,7 +34,7 @@ export class Request {
       let opts = {
         baseUrl: config.url,
         url: self.options.url,
-        method: self.options.method,
+        method: method,
         headers: {
           Date: date,
           Authorization: `OW ${self.options.accessId}:${signature}`
@@ -37,14 +42,20 @@ export class Request {
         json: false
       };
 
-      if(method !== 'GET' && !body) {
+      if(method !== 'GET' && body) {
         opts.body = body;
         opts.headers['Content-type'] = 'application/json';
       }
 
       request(opts, function(err, response) {
         if(err) return reject(err);
-        resolve(response.body);
+        try {
+          let result = JSON.parse(response.body);
+          logger('response received', result);
+          resolve(result);
+        } catch(err) {
+          reject(err);
+        }
       });
     });
   }
