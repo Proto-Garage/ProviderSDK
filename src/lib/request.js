@@ -1,7 +1,8 @@
 'use strict';
 
-import request from 'request';
-import config from '../../config';
+import request    from 'request';
+import config     from '../../config';
+import {hmacsign} from './utilities';
 
 export class Request {
   constructor(options) {
@@ -15,12 +16,21 @@ export class Request {
   _send() {
     let self = this;
     return new Promise(function(resolve, reject) {
+      let date = new Date().toUTCString();
+      let signature = hmacsign({
+        method: self.options.method.toUpperCase(),
+        url: self.options.url,
+        body: (self.options.method.toUpperCase() === 'GET') ? null : self.options.body,
+        date,
+        secretKey: self.options.secretKey
+      });
       let opts = {
         baseUrl: config.url,
         url: self.options.url,
         method: self.options.method,
         headers: {
-          Date: new Date().toUTCString()
+          Date: date,
+          Authorization: `OW ${self.options.accessId}:${signature}`
         },
         json: true
       };
