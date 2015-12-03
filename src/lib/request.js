@@ -25,12 +25,46 @@ export class Request {
     logger('request created', options);
   }
 
+  backoff () {
+    let self = this;
+    if(!self.backoff) {
+      self.backoff = {
+        current: config.backoff.initialDelay,
+        next: config.backoff.initialDelay,
+        count: 0
+      };
+    }
+    return new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        let next = self.backoff.current + self.backoff.next;
+        self.backoff.current = self.backoff.next;
+        self.backoff.next = next;
+        self.backoff.count++;
+        if(self.backoff.count >= config.backoff.maxNumBackoff) {
+          return reject(new Error('Maximum number of backoffs reached'));
+        }
+        resolve();
+      }, self.backoff.current);
+    });
+  }
+
   /**
    * Send the request and retry if communication error is encountered
    * @return {Promise}
    */
   send () {
-    return this.sendRequest();
+    let self = this;
+    return new Promise(function(resolve, reject) {
+      self.sendRequest().then(resolve).catch(function(err) {
+        logger('request error', err);
+        if(!self.options.backoff) {
+          return reject(err);
+        }
+        self.backoff().then(function() {
+          self.send();
+        }).catch(reject);
+      });
+    });
   }
 
   /**
@@ -59,6 +93,7 @@ export class Request {
           Date: date,
           Authorization: `OW ${self.options.accessId}:${signature}`
         },
+        timeout: config.timeout,
         json: false
       };
 
@@ -74,7 +109,8 @@ export class Request {
           logger('response received', result);
           resolve(result);
         } catch(err) {
-          reject(err);
+          logger(`error parsing ${response.body}`);
+          resolve({});
         }
       });
     });
