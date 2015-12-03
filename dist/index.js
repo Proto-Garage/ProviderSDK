@@ -107,15 +107,19 @@ var OneWallet = exports.OneWallet = (function () {
     /**
      * Apply changes in the users balance. Player cannot
      * lose more than he has reserved.
-     * @param  {string} userId User/Player id
-     * @param  {string} gameId Game id
-     * @param  {number} delta  Win/Loss amount
+     * @param  {string} userId   User/Player id
+     * @param  {string} gameId   Game id
+     * @param  {number} winloss  Win/Loss amount
+     * @param  {number} turnover Win/Loss amount
+     * @param  {object} meta     Any options information
      * @return {Promise}
      */
 
   }, {
     key: 'credit',
-    value: function credit(userId, gameId, delta) {
+    value: function credit(userId, gameId, winloss, turnover) {
+      var meta = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
+
       var transactionId = _nodeUuid2.default.v1();
       var opts = {
         method: 'PUT',
@@ -124,9 +128,10 @@ var OneWallet = exports.OneWallet = (function () {
         secretKey: this.secretKey,
         body: {
           type: 'credit',
-          params: {
-            delta: delta
-          }
+          params: Object.assign({
+            winloss: winloss,
+            turnover: turnover
+          }, meta)
         }
       };
 
