@@ -77,12 +77,14 @@ export class OneWallet {
   /**
    * Apply changes in the users balance. Player cannot
    * lose more than he has reserved.
-   * @param  {string} userId User/Player id
-   * @param  {string} gameId Game id
-   * @param  {number} delta  Win/Loss amount
+   * @param  {string} userId   User/Player id
+   * @param  {string} gameId   Game id
+   * @param  {number} winloss  Win/Loss amount
+   * @param  {number} turnover Win/Loss amount
+   * @param  {object} meta     Any options information
    * @return {Promise}
    */
-  credit(userId, gameId, delta) {
+  credit(userId, gameId, winloss, turnover, meta = {}) {
     let transactionId = uuid.v1();
     let opts = {
       method: 'PUT',
@@ -91,9 +93,10 @@ export class OneWallet {
       secretKey: this.secretKey,
       body: {
         type: 'credit',
-        params: {
-          delta
-        }
+        params: Object.assign({
+          winloss,
+          turnover
+        }, meta)
       }
     };
 
