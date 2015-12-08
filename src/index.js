@@ -10,9 +10,10 @@ export class OneWallet {
    * @param  {string} accessId  Provider access id
    * @param  {string} secretKey Provider secret key
    */
-  constructor(accessId, secretKey) {
+  constructor(accessId, secretKey, baseUrl) {
     this.accessId = accessId;
     this.secretKey = secretKey;
+    this.baseUrl = baseUrl;
   }
 
   /**
@@ -24,6 +25,7 @@ export class OneWallet {
     let opts = {
       method: 'GET',
       url: `/v1/users/${userId}?fields=totalBalance`,
+      baseUrl: this.baseUrl,
       accessId: this.accessId,
       secretKey: this.secretKey
     };
@@ -40,6 +42,7 @@ export class OneWallet {
     let opts = {
       method: 'GET',
       url: `/v1/users/${userId}?fields=availableBalance`,
+      baseUrl: this.baseUrl,
       accessId: this.accessId,
       secretKey: this.secretKey
     };
@@ -63,6 +66,7 @@ export class OneWallet {
       url: `/v1/users/${userId}/games/${gameId}/transactions/${transactionId}`,
       accessId: this.accessId,
       secretKey: this.secretKey,
+      baseUrl: this.baseUrl,
       body: {
         type: 'debit',
         params: {
@@ -91,6 +95,7 @@ export class OneWallet {
       url: `/v1/users/${userId}/games/${gameId}/transactions/${transactionId}`,
       accessId: this.accessId,
       secretKey: this.secretKey,
+      baseUrl: this.baseUrl,
       body: {
         type: 'credit',
         params: Object.assign({
@@ -116,6 +121,7 @@ export class OneWallet {
       url: `/v1/users/${userId}/games/${gameId}/transactions/${transactionId}`,
       accessId: this.accessId,
       secretKey: this.secretKey,
+      baseUrl: this.baseUrl,
       body: {
         type: 'rollback'
       }

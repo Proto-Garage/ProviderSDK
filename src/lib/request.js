@@ -86,7 +86,7 @@ export class Request {
         secretKey: self.options.secretKey
       });
       let opts = {
-        baseUrl: config.url,
+        baseUrl: self.options.baseUrl,
         url: self.options.url,
         method: method,
         headers: {
