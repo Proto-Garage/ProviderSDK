@@ -4,7 +4,8 @@
   "description": "SDK for OneWallet providers",
   "main": "index.js",
   "scripts": {
-    "build": "babel src/ --out-dir dist/"
+    "build": "babel src/ --out-dir dist/",
+    "postinstall": "npm run babel"
   },
   "jshintConfig": {
     "node": true,
