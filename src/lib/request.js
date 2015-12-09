@@ -56,7 +56,12 @@ export class Request {
   send () {
     let self = this;
     return new Promise(function(resolve, reject) {
-      self.sendRequest().then(resolve).catch(function(err) {
+      self.sendRequest().then(function(result) {
+        if(result instanceof Error) {
+          return reject(result);
+        }
+        resolve(result);
+      }).catch(function(err) {
         logger('request error', err);
         if(!self.options.backoff) {
           return reject(new APIError('ERR_REQUEST', err.message));
@@ -109,12 +114,12 @@ export class Request {
           let result = JSON.parse(response.body);
           logger('response received', result, response.statusCode);
           if(response.statusCode !== 200) {
-            return reject(new APIError(result.code, result.message));
+            return resolve(new APIError(result.code, result.message));
           }
           resolve(result);
         } catch(err) {
           logger(`error parsing ${response.body}`);
-          resolve({});
+          reject(err);
         }
       });
     });
