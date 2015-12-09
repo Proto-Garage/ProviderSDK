@@ -1,7 +1,10 @@
 'use strict';
 
-import {Request} from './lib/request';
-import uuid      from 'node-uuid';
+import { Request }  from './lib/request';
+import uuid         from 'node-uuid';
+import { APIError } from './lib/error';
+
+export { APIError };
 
 export class OneWallet {
 

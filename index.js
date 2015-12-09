@@ -1,1 +1,1 @@
-module.exports = Object.assign({}, require('./dist'), require('./dist/lib/error'));
+module.exports = require('./dist');
