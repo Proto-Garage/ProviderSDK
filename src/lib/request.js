@@ -1,10 +1,11 @@
 'use strict';
 
-import request    from 'request';
-import config     from '../../config';
-import {hmacsign} from './utilities';
-import debug      from 'debug';
-import Promise    from 'bluebird';
+import request      from 'request';
+import config       from '../../config';
+import { hmacsign } from './utilities';
+import debug        from 'debug';
+import Promise      from 'bluebird';
+import { APIError } from './error';
 
 const logger = debug('providersdk:request');
 
@@ -41,7 +42,7 @@ export class Request {
         self.backoff.next = next;
         self.backoff.count++;
         if(self.backoff.count >= config.backoff.maxNumBackoff) {
-          return reject(new Error('Maximum number of backoffs reached'));
+          return reject(new APIError('ERR_REQUEST', 'Maximum number of backoffs reached'));
         }
         resolve();
       }, self.backoff.current);
@@ -58,7 +59,7 @@ export class Request {
       self.sendRequest().then(resolve).catch(function(err) {
         logger('request error', err);
         if(!self.options.backoff) {
-          return reject(err);
+          return reject(new APIError('ERR_REQUEST', err.message));
         }
         self.backoff().then(function() {
           self.send();
@@ -106,7 +107,10 @@ export class Request {
         if(err) return reject(err);
         try {
           let result = JSON.parse(response.body);
-          logger('response received', result);
+          logger('response received', result, response.statusCode);
+          if(response.statusCode !== 200) {
+            return reject(new APIError(result.code, result.message));
+          }
           resolve(result);
         } catch(err) {
           logger(`error parsing ${response.body}`);
