@@ -87,19 +87,19 @@ var OneWallet = exports.OneWallet = (function () {
      * Reserve balance for a specified game.
      * If called more than once, any previously reserved balance is returned
      * into the user balance pool.
-     * @param  {string} userId User/Player id
-     * @param  {string} gameId Game id
-     * @param  {number} amount Amount to reserve
+     * @param  {string} userId      User/Player id
+     * @param  {string} referenceId Reference id
+     * @param  {number} amount      Amount to reserve
      * @return {Promise}
      */
 
   }, {
     key: 'debit',
-    value: function debit(userId, gameId, amount) {
+    value: function debit(userId, referenceId, amount) {
       var transactionId = _nodeUuid2.default.v1();
       var opts = {
         method: 'PUT',
-        url: '/v1/users/' + userId + '/games/' + gameId + '/transactions/' + transactionId,
+        url: '/v1/users/' + userId + '/transactions/' + transactionId,
         accessId: this.accessId,
         secretKey: this.secretKey,
         baseUrl: this.baseUrl,
@@ -117,28 +117,29 @@ var OneWallet = exports.OneWallet = (function () {
     /**
      * Apply changes in the users balance. Player cannot
      * lose more than he has reserved.
-     * @param  {string} userId   User/Player id
-     * @param  {string} gameId   Game id
-     * @param  {number} winloss  Win/Loss amount
-     * @param  {number} turnover Win/Loss amount
-     * @param  {object} meta     Any options information
+     * @param  {string} userId      User/Player id
+     * @param  {string} referenceId Reference id
+     * @param  {number} winloss     Win/Loss amount
+     * @param  {number} turnover    Win/Loss amount
+     * @param  {object} meta        Any options information
      * @return {Promise}
      */
 
   }, {
     key: 'credit',
-    value: function credit(userId, gameId, winloss, turnover) {
+    value: function credit(userId, referenceId, winloss, turnover) {
       var meta = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
       var transactionId = _nodeUuid2.default.v1();
       var opts = {
         method: 'PUT',
-        url: '/v1/users/' + userId + '/games/' + gameId + '/transactions/' + transactionId,
+        url: '/v1/users/' + userId + '/transactions/' + transactionId,
         accessId: this.accessId,
         secretKey: this.secretKey,
         baseUrl: this.baseUrl,
         body: {
           type: 'credit',
+          referenceId: referenceId,
           params: _extends({
             winloss: winloss,
             turnover: turnover
@@ -151,23 +152,24 @@ var OneWallet = exports.OneWallet = (function () {
 
     /**
      * Release reserved balance for a specified game
-     * @param  {string} userId User/Player id
-     * @param  {string} gameId Game id
+     * @param  {string} userId      User/Player id
+     * @param  {string} referenceId Reference id
      * @return {Promise}
      */
 
   }, {
     key: 'rollback',
-    value: function rollback(userId, gameId) {
+    value: function rollback(userId, referenceId) {
       var transactionId = _nodeUuid2.default.v1();
       var opts = {
         method: 'PUT',
-        url: '/v1/users/' + userId + '/games/' + gameId + '/transactions/' + transactionId,
+        url: '/v1/users/' + userId + '/transactions/' + transactionId,
         accessId: this.accessId,
         secretKey: this.secretKey,
         baseUrl: this.baseUrl,
         body: {
-          type: 'rollback'
+          type: 'rollback',
+          referenceId: referenceId
         }
       };
 
