@@ -105,6 +105,7 @@ var OneWallet = exports.OneWallet = (function () {
         baseUrl: this.baseUrl,
         body: {
           type: 'debit',
+          referenceId: referenceId,
           params: {
             amount: amount
           }

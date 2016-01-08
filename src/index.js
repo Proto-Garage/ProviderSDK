@@ -72,6 +72,7 @@ export class OneWallet {
       baseUrl: this.baseUrl,
       body: {
         type: 'debit',
+        referenceId,
         params: {
           amount
         }
