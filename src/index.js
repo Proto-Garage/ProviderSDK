@@ -57,16 +57,16 @@ export class OneWallet {
    * Reserve balance for a specified game.
    * If called more than once, any previously reserved balance is returned
    * into the user balance pool.
-   * @param  {string} userId User/Player id
-   * @param  {string} gameId Game id
-   * @param  {number} amount Amount to reserve
+   * @param  {string} userId      User/Player id
+   * @param  {string} referenceId Reference id
+   * @param  {number} amount      Amount to reserve
    * @return {Promise}
    */
-  debit(userId, gameId, amount) {
+  debit(userId, referenceId, amount) {
     let transactionId = uuid.v1();
     let opts = {
       method: 'PUT',
-      url: `/v1/users/${userId}/games/${gameId}/transactions/${transactionId}`,
+      url: `/v1/users/${userId}/transactions/${transactionId}`,
       accessId: this.accessId,
       secretKey: this.secretKey,
       baseUrl: this.baseUrl,
@@ -84,23 +84,24 @@ export class OneWallet {
   /**
    * Apply changes in the users balance. Player cannot
    * lose more than he has reserved.
-   * @param  {string} userId   User/Player id
-   * @param  {string} gameId   Game id
-   * @param  {number} winloss  Win/Loss amount
-   * @param  {number} turnover Win/Loss amount
-   * @param  {object} meta     Any options information
+   * @param  {string} userId      User/Player id
+   * @param  {string} referenceId Reference id
+   * @param  {number} winloss     Win/Loss amount
+   * @param  {number} turnover    Win/Loss amount
+   * @param  {object} meta        Any options information
    * @return {Promise}
    */
-  credit(userId, gameId, winloss, turnover, meta = {}) {
+  credit(userId, referenceId, winloss, turnover, meta = {}) {
     let transactionId = uuid.v1();
     let opts = {
       method: 'PUT',
-      url: `/v1/users/${userId}/games/${gameId}/transactions/${transactionId}`,
+      url: `/v1/users/${userId}/transactions/${transactionId}`,
       accessId: this.accessId,
       secretKey: this.secretKey,
       baseUrl: this.baseUrl,
       body: {
         type: 'credit',
+        referenceId,
         params: Object.assign({
           winloss,
           turnover
@@ -113,20 +114,21 @@ export class OneWallet {
 
   /**
    * Release reserved balance for a specified game
-   * @param  {string} userId User/Player id
-   * @param  {string} gameId Game id
+   * @param  {string} userId      User/Player id
+   * @param  {string} referenceId Reference id
    * @return {Promise}
    */
-  rollback(userId, gameId) {
+  rollback(userId, referenceId) {
     let transactionId = uuid.v1();
     let opts = {
       method: 'PUT',
-      url: `/v1/users/${userId}/games/${gameId}/transactions/${transactionId}`,
+      url: `/v1/users/${userId}/transactions/${transactionId}`,
       accessId: this.accessId,
       secretKey: this.secretKey,
       baseUrl: this.baseUrl,
       body: {
-        type: 'rollback'
+        type: 'rollback',
+        referenceId
       }
     };
 
