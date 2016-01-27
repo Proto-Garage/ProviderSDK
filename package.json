@@ -1,6 +1,6 @@
 {
   "name": "ProviderSDK",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "SDK for OneWallet providers",
   "main": "index.js",
   "scripts": {
