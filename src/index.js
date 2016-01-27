@@ -54,6 +54,40 @@ export class OneWallet {
   }
 
   /**
+   * Retrieve the user currency
+   * @param  {string} userId User/Player id
+   * @return {Promise}
+   */
+  currency(userId) {
+    let opts = {
+      method: 'GET',
+      url: `/v1/users/${userId}?fields=currency`,
+      baseUrl: this.baseUrl,
+      accessId: this.accessId,
+      secretKey: this.secretKey
+    };
+
+    return new Request(opts).send().then((res) => Promise.resolve(res.currency));
+  }
+
+  /**
+   * Retrieve complete user info
+   * @param  {string} userId User/Player id
+   * @return {Promise}
+   */
+  userInfo(userId) {
+    let opts = {
+      method: 'GET',
+      url: `/v1/users/${userId}`,
+      baseUrl: this.baseUrl,
+      accessId: this.accessId,
+      secretKey: this.secretKey
+    };
+
+    return new Request(opts).send().then((res) => Promise.resolve(res));
+  }
+
+  /**
    * Reserve balance for a specified game.
    * If called more than once, any previously reserved balance is returned
    * into the user balance pool.
